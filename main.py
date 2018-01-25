@@ -78,11 +78,11 @@ def detect_change(args):
 def check(args):
   autocrlf = git.config('core.autocrlf') or 'false'
   if os.name == 'nt' and autocrlf != 'true':
-    print('core.autocrlf: recommended to be set to "true" on Windows (have "{}")'.format(autocrlf))
+    print('core.autocrlf: I recommend to set core.autocrlf=true on Windows (you have "{}")'.format(autocrlf))
   elif os.name != 'nt' and autocrlf != 'input':
-    print('core.autocrlf: recommended to be set to "input" on Unix platforms (have "{}")'.format(autocrlf))
+    print('core.autocrlf: I recommend to set core.autocrlf=input on Unix platforms (you have "{}")'.format(autocrlf))
   else:
-    print('core.autocrlf: Ok.')
+    print('core.autocrlf: Lookin\' good.')
 
 
 def main(argv=None):
