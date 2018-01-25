@@ -1,5 +1,6 @@
 
 import argparse
+import collections
 import os
 import sys
 import git from './git'
@@ -56,23 +57,38 @@ def show(args):
 
 
 def detect_change(args):
-  # Get the line-endings of the file.
-  line_endings = get_line_endings(git.get_file(args.rev, args.file))
-  print('{}@{} has line-endings {}'.format(args.file, args.rev, line_endings.upper()))
 
-  # Revisions that we still need to check.
-  revisions = [(args.rev, line_endings, x) for x in git.parents(args.rev)]
-  while revisions:
-    child, line_endings, rev = revisions.pop()
+  # Caches the line-endings for the file in a revision.
+  le_cache = {}
+  def get_le(rev):
     try:
-      cle = get_line_endings(git.get_file(rev, args.file))
-    except git.DoesNotExist:
-      continue
-    parents = git.parents(rev)
-    if cle != line_endings:
-      print('  change from {0} to {1} in {2} (try `git diff {2} {3}`)'.format(
-        line_endings.upper(), cle.upper(), git.short(child), git.short(rev)))
-    revisions += [(rev, cle, x) for x in parents]
+      return le_cache[rev]
+    except KeyError:
+      pass
+    try:
+      result = get_line_endings(git.get_file(rev, args.file))
+    except git.DoesNotExist as e:
+      result = None
+    le_cache[rev] = result
+    return result
+
+  try:
+    args.rev = git.rev_parse(args.rev)
+    commits = list(git.rev_list(args.rev))
+    for index, rev in enumerate(commits):
+      print('\r {}/{} ({})'.format(index, len(commits), rev), end='')
+      revs = [rev] + git.parents(rev)
+      le = [get_le(x) for x in revs]
+      changed_indices = [i for i in range(1, len(le)) if le[i] and le[i] != le[0]]
+      if changed_indices:
+        print('\r', end='')
+      for i in changed_indices:
+        print('{}..{} ({}..{})'.format(revs[i], revs[0], le[i].upper(), le[0].upper()), end='')
+        if len(revs) > 2:
+          print(' merge-commit', end='')
+        print()
+  finally:
+    print('\r')
 
 
 def check(args):

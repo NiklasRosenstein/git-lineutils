@@ -9,9 +9,11 @@ class DoesNotExist(ValueError):
 
 def parents(rev):
   " Returns a list of the parent commit IDs. "
-  args = ['git', 'cat-file', '-p', rev]
-  output = subprocess.check_output(args, stderr=subprocess.PIPE)
-  return re.findall('parent\s+([\w\d]+)', output.decode())
+  rev = rev_parse(rev)
+  args = ['git', 'rev-list', '--parents', '-n', '1', rev]
+  output = subprocess.check_output(args, stderr=subprocess.PIPE).decode()
+  items = output.split()
+  return items[1:]
 
 
 def get_file(rev, file):
@@ -25,11 +27,26 @@ def get_file(rev, file):
     raise
 
 
-def short(rev):
+def rev_parse(rev, short=False):
   " Returns the short form of a revisions commit ID. "
   args = ['git', 'rev-parse', rev]
   output = subprocess.check_output(args, stderr=subprocess.PIPE)
-  return output.decode().strip()[:10]
+  result = output.decode().strip()
+  if short:
+    result = result[:10]
+  return result
+
+
+def rev_list(rev, *args):
+  args = ['git', 'rev-list'] + list(args) + [rev]
+  proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+  while True:
+    line = proc.stdout.readline().strip()
+    if not line: break
+    yield line.decode('ascii')
+  _, stderr = proc.communicate()
+  if proc.returncode != 0:
+    raise subprocess.CalledProcessError(proc.returncode, args, _, stderr)
 
 
 def branches(all=False, merged_into=None):
