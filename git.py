@@ -50,3 +50,11 @@ def branches(all=False, merged_into=None):
       if parts[0] == '*': parts.pop(0)
       result.append(parts[0].strip())
     return result
+
+
+def config(key, value=None, global_=False):
+  args = ['git', 'config']
+  if global_: args.append('--global')
+  args.append(key)
+  if value: args.append(value)
+  return subprocess.check_output(args, stderr=subprocess.PIPE).decode().strip()

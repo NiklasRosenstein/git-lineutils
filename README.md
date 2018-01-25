@@ -2,7 +2,7 @@
 
 Find issues with line-endings in your repository.
 
-> `usage: git-lineutils [-h] {detect-change,show} ...`
+> `usage: git-lineutils [-h] {detect-change,show,check} ...`
 
 ```
 usage: git-lineutils detect-change [-h] [--rev REV] file
@@ -31,4 +31,13 @@ optional arguments:
                        branch.
   --lf                 Only show branches with LF.
   --crlf               Only show branches with CRLF.
+```
+
+```
+usage: git-lineutils check [-h]
+
+Checks your Git configuration and makes suggestions.
+
+optional arguments:
+  -h, --help  show this help message and exit
 ```

@@ -1,5 +1,6 @@
 
 import argparse
+import os
 import sys
 import git from './git'
 
@@ -21,6 +22,8 @@ show_parser.add_argument('-a', '--all', action='store_true', help='Include remot
 show_parser.add_argument('--unmerged', help='Exclude branches that are merged into the specified branch.')
 show_parser.add_argument('--lf', action='store_true', help='Only show branches with LF.')
 show_parser.add_argument('--crlf', action='store_true', help='Only show branches with CRLF.')
+
+check_parser = subparsers.add_parser('check', description='Checks your Git configuration and makes suggestions.')
 
 
 def get_line_endings(string):
@@ -70,6 +73,16 @@ def detect_change(args):
       print('  change from {0} to {1} in {2} (try `git diff {2} {3}`)'.format(
         line_endings.upper(), cle.upper(), git.short(child), git.short(rev)))
     revisions += [(rev, cle, x) for x in parents]
+
+
+def check(args):
+  autocrlf = git.config('core.autocrlf') or 'false'
+  if os.name == 'nt' and autocrlf != 'true':
+    print('core.autocrlf: recommended to be set to "true" on Windows (have "{}")'.format(autocrlf))
+  elif os.name != 'nt' and autocrlf != 'input':
+    print('core.autocrlf: recommended to be set to "input" on Unix platforms (have "{}")'.format(autocrlf))
+  else:
+    print('core.autocrlf: Ok.')
 
 
 def main(argv=None):
