@@ -59,3 +59,5 @@ e43b352c4957eb9c3036a2ce16d7a0c85743f235..0d025846d088dcc4d8b0fafe4d27a2b8aec9ae
 9571afd2e5d9f39f5a7c75fbbab7d678778dadbf..4d1540a1191d8d6e50a8685e862d3311ee60228d (LF..CRLF)
  306/708 (07d150671f9b8528438ce5e61378c01b4fb43294)
 ```
+
+Note that the last commit returned by this command is usually where it started.
