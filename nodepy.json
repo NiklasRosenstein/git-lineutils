@@ -1,0 +1,10 @@
+{
+  "name": "@NiklasRosenstein/git-lineutils",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authors": ["rosensteinniklas@gmail.com"],
+  "description": "Find issues with line-endings in your repository.",
+  "bin": {
+    "git-lineutils": "./main"
+  }
+}
